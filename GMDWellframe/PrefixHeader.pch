@@ -1,0 +1,17 @@
+//
+//  PrefixHeader.pch
+//  GMDWellframe
+//
+//  Created by Rockstar. on 2/11/15.
+//  Copyright (c) 2015 Gabe Morales. All rights reserved.
+//
+
+#ifndef __IPHONE_7_0
+#warning "This project uses features only available in iOS SDK 7.0 and later."
+#endif
+
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import "AppDelegate.h"
+#import "GMDKit.h"
+#import "GlobalModel.h"
