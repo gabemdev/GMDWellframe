@@ -11,6 +11,7 @@
 #import "CoreDataStack.h"
 #import "BookmarkEntry.h"
 #import "DetailViewController.h"
+#import "BookmarkCell.h"
 
 @interface BookmarksViewController () <NSFetchedResultsControllerDelegate>
 @property (nonatomic) NSFetchedResultsController *fetchedResultsController;
@@ -21,13 +22,13 @@
 
 - (UITableView *)table {
     if (!_table) {
-        _table = [[UITableView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.bounds.size.width, self.view.bounds.size.height) style:UITableViewStyleGrouped];
+        _table = [[UITableView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.bounds.size.width, self.view.bounds.size.height) style:UITableViewStylePlain];
         _table.translatesAutoresizingMaskIntoConstraints = NO;
         _table.backgroundColor = [UIColor GMDKitBackgroundColor];
         _table.delegate = self;
         _table.dataSource = self;
         _table.scrollEnabled = YES;
-        [_table registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+        [_table registerClass:[BookmarkCell class] forCellReuseIdentifier:@"Cell"];
         _table.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
         _table.separatorColor = [UIColor GMDKitColorWithHex:@"3B7ADA"];
     }
@@ -39,6 +40,7 @@
     [self.navigationItem setTitle:[NSString stringWithFormat:@"Bookmarks"]];
 
     [self.view addSubview:self.table];
+    [self loadConstraints];
     [self.fetchedResultsController performFetch:nil];
     // Do any additional setup after loading the view.
 }
@@ -62,22 +64,20 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"Cell";
 
-    UITableViewCell *cell = [_table dequeueReusableCellWithIdentifier:cellIdentifier];
+    BookmarkCell *cell = [_table dequeueReusableCellWithIdentifier:cellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
         cell.backgroundColor = [UIColor GMDKitBackgroundColor];
     }
     BookmarkEntry *entry = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    cell.textLabel.textColor = [UIColor GMDKitColorWithHex:@"3B7ADA"];
-    cell.textLabel.font = [UIFont fontWithName:@"Avenir-Medium" size:20];
-    cell.textLabel.text = entry.title;
+    cell.bookmarkTitle.text = entry.title;
 
     return cell;
 }
 
 #pragma mark - UITableView Delegate
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 50;
+    BookmarkEntry *entry =  [self.fetchedResultsController objectAtIndexPath:indexPath];
+    return [BookmarkCell heightForEntry:entry];
 }
 
 
@@ -158,5 +158,16 @@
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     [self.table endUpdates];
+}
+
+#pragma mark - AutoLayout
+- (void)loadConstraints {
+    NSDictionary *viewDict = @{@"table": _table};
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[table]|"
+                                                                      options:kNilOptions metrics:nil
+                                                                        views:viewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[table]|"
+                                                                      options:kNilOptions metrics:nil
+                                                                        views:viewDict]];
 }
 @end

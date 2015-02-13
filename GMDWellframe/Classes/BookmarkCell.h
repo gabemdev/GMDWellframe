@@ -12,6 +12,7 @@
 @interface BookmarkCell : UITableViewCell
 @property (nonatomic) UILabel *bookmarkTitle;
 
++ (CGFloat)heightForEntry:(BookmarkEntry *)entry;
 - (void)configureCellForEntry:(BookmarkEntry *)entry;
 
 @end
